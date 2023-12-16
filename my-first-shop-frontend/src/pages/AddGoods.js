@@ -1,10 +1,11 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
 export default function AddGoods() {
     const [Name, setNames,] = useState('');
     const [Details, setDetails] = useState('');
     const [Price, setPrice] = useState('');
-    const [selectedImage, setSelectedImage] = useState(null);
+    const [images, setImages] = useState([]);
+    const [imageURLs, setImageURLs] = useState([]);
 
     const handleNameChange = (event) => {
         setNames(event.target.value);
@@ -22,19 +23,17 @@ export default function AddGoods() {
         event.preventDefault();
     };
 
-    const handleImageChange = (event) => {
-        const file = event.target.files[0];
+    useEffect(() => {
+        if (images.length < 1) return;
+        const newImagesUrls = [];
+        images.forEach(image => newImagesUrls.push(URL.createObjectURL(image)))           
+        setImageURLs(newImagesUrls);
+        }, [images]);
 
-        if (file) {
-            const reader = new FileReader();
-
-            reader.onload = (e) => {
-                setSelectedImage(e.target.result);
-            };
-
-            reader.readAsDataURL(file);
+        function onImageChange(e) {
+            setImages([...e.target.files]);
         }
-    };
+
 
 
 
@@ -78,11 +77,9 @@ export default function AddGoods() {
                     <div class='flex justify-center h-64'>
                         <div class="file-upload-box bg-sky-100 rounded-lg border-dashed border-4 border-violet-400 w-1/4">
                             <div class='flex justify-center'>
-                                <input class='' type="file" accept="image/*" onChange={handleImageChange} />
-                                {selectedImage && (
-                                    <div>
-                                        <img src={selectedImage} alt="Selected" style={{ maxWidth: '300px' }} />
-                                    </div>
+                                <input type="file" accept="image/*" onChange={onImageChange} />
+                                {imageURLs.map(imageSrc=> (
+                                <img class='w-2/3' src={imageSrc}/>)
                                 )}
                             </div>
                         </div>
