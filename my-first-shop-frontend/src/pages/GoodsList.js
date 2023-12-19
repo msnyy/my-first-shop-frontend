@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import './GoodsList.css'
+//import AddGoods from './pages/AddGoods'; 
 
 export default function GoodsList() {
   const [products, setProducts] = useState();
@@ -52,7 +52,7 @@ export default function GoodsList() {
             <div class="px-6 py-4">
               <div class="font-bold text-xl mb-2">{item.productName}</div>
               <p class="text-gray-700 text-base">
-                eiei
+                {item.productName}
               </p>
             </div>
             <div class="px-6 pt-4 pb-2">
