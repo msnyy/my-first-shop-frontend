@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-//import AddGoods from './pages/AddGoods'; 
+
 
 export default function GoodsList() {
   const [products, setProducts] = useState();

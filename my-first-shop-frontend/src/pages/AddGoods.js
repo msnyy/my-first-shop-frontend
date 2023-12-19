@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react'
 
 export default function AddGoods() {
-    const [Name, setNames,] = useState('');
-    const [Details, setDetails] = useState('');
-    const [Price, setPrice] = useState('');
-    const [imageURLs, setImageURLs] = useState([]);
+    const [name, setNames,] = useState('');
+    const [details, setDetails] = useState('');
+    const [price, setPrice] = useState('');
+    const [selectedImage, setSelectedImage] = useState(null);
     
 
     const handleNameChange = (event) => {
@@ -23,23 +23,52 @@ export default function AddGoods() {
         event.preventDefault();
     };
 
-    const onImageChange = (event) => {
-        const files = event.target.files;
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
     
-        const newImages = Array.from(files);
-    
-        Promise.all(
-          newImages.map((image) => {
-            return new Promise((resolve) => {
-              const reader = new FileReader();
-              reader.onload = (e) => resolve(e.target.result);
-              reader.readAsDataURL(image);
-            });
-          })
-        ).then((urls) => {
-          setImageURLs((prevImages) => [...prevImages, ...urls]);
-        });
+        if (file) {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            setSelectedImage(reader.result);
+          };
+          reader.readAsDataURL(file);
+        } else {
+          setSelectedImage(null);
+        }
       };
+
+      const onClickSubmitBotton = async () => {
+        console.log(name)
+        console.log(details)
+        console.log(price)
+        console.log(selectedImage)
+        try {
+            const response = await fetch("http://localhost:8080/product", {
+                method: "POST",
+                mode: "cors",
+                cache: "no-cache",
+                credentials: "same-origin",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    productName: name,
+                    price: price,
+                    detail: details,
+                    image: selectedImage[0],
+                }),
+              });
+          
+              if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+              }
+          
+              return response.json();
+            } catch (error) {
+              console.error("Error fetching data:", error.message);
+              throw error;
+            }
+        }
 
 
 
@@ -56,7 +85,7 @@ export default function AddGoods() {
                         <h1 class="md:mx-2 text-zinc-400 rounded transition-colors duration-300">( ระบุได้ไม่เกิน 200 ตัวอักษร )</h1>
                         <form class="w-full max-w-sm  " onSubmit={handleSubmit}>
                             <div class="m-4 md:w-3/3 ">
-                                <input htmlFor='Name' class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-violet-300" id="inline-full-name" type="text" placeholder="รายละเอียด" value={Name} onChange={handleNameChange}>
+                                <input htmlFor='Name' class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-violet-300" id="inline-full-name" type="text" placeholder="รายละเอียด" value={name} onChange={handleNameChange}>
                                 </input>
                             </div>
                         </form>
@@ -66,7 +95,7 @@ export default function AddGoods() {
                         <h1 class="md:mx-2 text-zinc-400 rounded transition-colors duration-300">( ระบุได้ไม่เกิน 1000 ตัวอักษร )</h1>
                         <form class="w-full max-w-sm  " onSubmit={handleSubmit}>
                             <div class="m-4 md:w-3/3 ">
-                                <input  htmlFor='details' class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-violet-300" id="inline-FillDetails" type="text" placeholder="รายละเอียด" value={Details} onChange={handleDetailChange}>
+                                <input  htmlFor='details' class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-violet-300" id="inline-FillDetails" type="text" placeholder="รายละเอียด" value={details} onChange={handleDetailChange}>
                                 </input>
                             </div>
                         </form>
@@ -75,17 +104,17 @@ export default function AddGoods() {
                         <a class="p-2 lg:px-4 md:mx-2 text-gray-600 rounded  transition-colors duration-300">ราคา</a>
                         <form class="w-full max-w-sm  " onSubmit={handleSubmit}>
                             <div class="m-4 md:w-3/3 ">
-                                <input htmlFor='price' class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-violet-300" id="inl  ine-FillPrice" type="text" placeholder="รายละเอียด" value={Price} onChange={handlePriceChange}>
+                                <input htmlFor='price' class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-violet-300" id="inl  ine-FillPrice" type="text" placeholder="รายละเอียด" value={price} onChange={handlePriceChange}>
                                 </input>
                             </div>
                         </form>
                     </div>
 
                     <div className="flex flex-wrap items-center space-y-10 space-x-10 w-full">
-                        <input htmlFor='imageURLs' id="dropzone-file" type="file" className="hidden" accept="image/*" onChange={onImageChange} multiple/>
-                        {imageURLs.map((image, index) => (
+                        <input accept="image/*" onChange={handleImageChange} type="file"/>
+                        {/* {image.map((image, index) => (
                             <img className="w-1/6" key={index} alt={`Selected Image ${index + 1}`} src={image}/>
-                        ))}
+                        ))} */}
                         <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-1/5 h-56 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
                             <div className="flex flex-col items-center justify-center pt-5 pb-6">
                                 <svg className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
@@ -96,7 +125,7 @@ export default function AddGoods() {
                         </label>
                     </div>
                     <div className="kb-buttons-box m-10">
-                                            <button type="submit" className="form-submit p-2 lg:px-4 md:mx-2 text-rose-400 text-center border border-solid border-sky-400 rounded hover:bg-pink-100 hover:text-sky-400 hover:border-pink-100 transition-colors duration-300 mt-1 md:mt-0 md:ml-1">Upload</button>
+                                            <button onClick={onClickSubmitBotton} type="submit" className="form-submit p-2 lg:px-4 md:mx-2 text-rose-400 text-center border border-solid border-sky-400 rounded hover:bg-pink-100 hover:text-sky-400 hover:border-pink-100 transition-colors duration-300 mt-1 md:mt-0 md:ml-1">Upload</button>
                                         </div>
                 </div>
             </div>
