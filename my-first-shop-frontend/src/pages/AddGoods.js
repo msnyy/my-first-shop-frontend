@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import Swal from 'sweetalert2';
-import 'sweetalert2/dist/sweetalert2.css';
 
 export default function AddGoods() {
     const [name, setNames,] = useState('');
     const [details, setDetails] = useState('');
-    const [price, setPrice] = useState('');
+    const [price, setPrice] = useState(0);
     const [selectedImage, setSelectedImage] = useState(null);
 
     const showAlertCompleted = () => {
@@ -87,9 +85,41 @@ export default function AddGoods() {
         }
     };
 
-    const onClickSubmitBotton = async () => {
-        showAlertCompleted();
-    }
+      const onClickSubmitBotton = async () => {
+        console.log(name)
+        console.log(details)
+        console.log(price)
+        console.log(selectedImage)
+        try {
+            const response = await fetch("http://localhost:8080/product", {
+                method: "POST",
+                mode: "cors",
+                cache: "no-cache",
+                credentials: "same-origin",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    productName: name,
+                    price: price,
+                    detail: details,
+                    image: selectedImage[0],
+                }),
+              });
+          
+              if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+              }
+          
+              return response.json();
+            } catch (error) {
+              console.error("Error fetching data:", error.message);
+              throw error;
+            }
+        }
+
+
+
 
     return (
         <div>
@@ -103,7 +133,7 @@ export default function AddGoods() {
                         <h1 class="md:mx-2 text-zinc-400 rounded transition-colors duration-300">( ระบุได้ไม่เกิน 200 ตัวอักษร )</h1>
                         <form class="w-full max-w-sm  " onSubmit={handleSubmit}>
                             <div class="m-4 md:w-3/3 ">
-                                <input htmlFor='Name' class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-violet-300" id="inline-full-name" type="text" placeholder="รายละเอียด" value={name} onChange={handleNameChange}>
+                                <input class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-violet-300" id="inline-full-name" type="text" placeholder="รายละเอียด" value={name} onChange={handleNameChange}>
                                 </input>
                             </div>
                         </form>
@@ -113,7 +143,7 @@ export default function AddGoods() {
                         <h1 class="md:mx-2 text-zinc-400 rounded transition-colors duration-300">( ระบุได้ไม่เกิน 1000 ตัวอักษร )</h1>
                         <form class="w-full max-w-sm  " onSubmit={handleSubmit}>
                             <div class="m-4 md:w-3/3 ">
-                                <input htmlFor='details' class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-violet-300" id="inline-FillDetails" type="text" placeholder="รายละเอียด" value={details} onChange={handleDetailChange}>
+                                <input  htmlFor='details' class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-violet-300" id="inline-FillDetails" type="text" placeholder="รายละเอียด" value={details} onChange={handleDetailChange}>
                                 </input>
                             </div>
                         </form>
@@ -122,7 +152,7 @@ export default function AddGoods() {
                         <a class="p-2 lg:px-4 md:mx-2 text-gray-600 rounded  transition-colors duration-300">ราคา</a>
                         <form class="w-full max-w-sm  " onSubmit={handleSubmit}>
                             <div class="m-4 md:w-3/3 ">
-                                <input htmlFor='price' class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-violet-300" id="inl  ine-FillPrice" type="text" placeholder="รายละเอียด" value={price} onChange={handlePriceChange}>
+                                <input class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-violet-300" id="inl  ine-FillPrice" type="text" placeholder="รายละเอียด" value={price} onChange={handlePriceChange}>
                                 </input>
                             </div>
                         </form>
