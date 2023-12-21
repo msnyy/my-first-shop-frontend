@@ -6,6 +6,7 @@ import NotFound from './pages/NotFound';
 import Main from './pages/Main';
 import AddGoods from './pages/AddGoods';
 import Header from './components/UiComponent/Header';
+import LoginPage from './pages/LoginPage';
 
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
           <Route path="/home" element={<Main />} />
           <Route path="/goods" element={<GoodsList />} />
           <Route path="/addgoods" element={<AddGoods />} />
+          <Route path="/loginpage" element={<LoginPage />} />
         </Routes>
       </BrowserRouter>
     </div>
